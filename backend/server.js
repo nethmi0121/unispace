@@ -20,6 +20,9 @@ app.get('/', (req, res) => {
   res.send('UniSpace API is running cleanly...');
 });
 
+// Make sure this path points EXACTLY to your analyticsRoutes file
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
