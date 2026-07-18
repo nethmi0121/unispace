@@ -1,0 +1,31 @@
+.room-form {
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.room-form h2 {
+  margin-bottom: 15px;
+}
+
+.room-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.room-form button {
+  padding: 10px 20px;
+  background-color: #003366;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.room-form button:hover {
+  background-color: #0055aa;
+}
