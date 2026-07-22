@@ -1,12 +1,3 @@
-:root {
-  --bg-primary: #f8f9fa;
-  --sidebar-bg: #1e293b;
-  --accent-color: #10b981;
-  --text-light: #f8fafc;
-  --text-dark: #334155;
-  --card-bg: #ffffff;
-}
-
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
