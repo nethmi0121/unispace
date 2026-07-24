@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import Navbar from "../components/Navbar";
-import RoomForm from "../components/RoomForm";
-import RoomCard from "../components/RoomCard";
+import RoomForm from "./RoomForm";
+import RoomCard from "./RoomCard";
 
 import "../styles/Dashboard.css";
 
@@ -88,7 +87,6 @@ function AdminDashboard() {
 
   return (
     <div>
-      <Navbar />
 
       <div className="dashboard">
         <h1>Admin Dashboard</h1>
