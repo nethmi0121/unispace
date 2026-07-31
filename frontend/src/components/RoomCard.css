@@ -1,208 +1,300 @@
 .dashboard {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dashboard-header {
-  text-align: center;
-  margin-bottom: 40px;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .dashboard-header h1 {
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
 }
 
 .dashboard-header p {
-  color: #7f8c8d;
-  font-size: 1.1rem;
+    color: #7f8c8d;
+    font-size: 1.1rem;
 }
 
 .rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
 }
 
 .room-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-left: 5px solid #27ae60;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 5px solid #27ae60;
 }
 
 .room-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* DYNAMIC CSS CLASSES - Key feature! */
 .room-available {
-  border-left-color: #27ae60;
-  background: #f0fff4;
+    border-left-color: #27ae60;
+    background: #f0fff4;
 }
 
 .room-warning {
-  border-left-color: #f39c12;
-  background: #fffbf0;
+    border-left-color: #f39c12;
+    background: #fffbf0;
 }
 
 .room-full {
-  border-left-color: #e74c3c;
-  background: #fff5f5;
+    border-left-color: #e74c3c;
+    background: #fff5f5;
 }
 
 .room-full .room-status-badge {
-  background: #e74c3c;
-  color: white;
+    background: #e74c3c;
+    color: white;
 }
 
 .room-available .room-status-badge {
-  background: #27ae60;
-  color: white;
+    background: #27ae60;
+    color: white;
 }
 
 .room-warning .room-status-badge {
-  background: #f39c12;
-  color: white;
-}
-
-.room-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.room-header h2 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
+    background: #f39c12;
+    color: white;
 }
 
 .room-status-badge {
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.room-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
 }
 
 .room-occupancy {
-  margin: 15px 0;
+    margin: 15px 0;
 }
 
 .occupancy-info {
-  display: flex;
-  align-items: baseline;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
 }
 
 .occupancy-number {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #2c3e50;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
 }
 
 .occupancy-total {
-  color: #7f8c8d;
-  margin-left: 5px;
-  font-size: 1rem;
+    color: #7f8c8d;
+    margin-left: 5px;
+    font-size: 1rem;
 }
 
 .progress-bar {
-  width: 100%;
-  height: 8px;
-  background: #ecf0f1;
-  border-radius: 4px;
-  overflow: hidden;
+    width: 100%;
+    height: 8px;
+    background: #ecf0f1;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .progress-fill {
-  height: 100%;
-  background: #27ae60;
-  border-radius: 4px;
-  transition: width 0.3s ease, background 0.3s ease;
+    height: 100%;
+    background: #27ae60;
+    border-radius: 4px;
+    transition: width 0.3s ease, background 0.3s ease;
 }
 
 .room-full .progress-fill {
-  background: #e74c3c;
+    background: #e74c3c;
 }
 
 .room-warning .progress-fill {
-  background: #f39c12;
+    background: #f39c12;
+}
+
+.room-status-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 2s infinite;
+}
+
+.room-available .status-dot {
+    background: #27ae60;
+}
+
+.room-warning .status-dot {
+    background: #f39c12;
+}
+
+.room-full .status-dot {
+    background: #e74c3c;
+}
+
+.status-text {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.last-updated {
+    color: #7f8c8d;
+    font-size: 0.75rem;
+}
+
+.update-time {
+    background: #ecf0f1;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+@keyframes pulse-dot {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 .room-actions {
-  display: flex;
-  gap: 10px;
-  margin: 15px 0;
+    margin: 15px 0;
 }
 
 .btn {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.btn-qr {
+    background: #9b59b6;
+    color: white;
 }
 
-.btn-checkin {
-  background: #27ae60;
-  color: white;
-}
-
-.btn-checkin:hover:not(:disabled) {
-  background: #219a52;
-  transform: scale(1.02);
-}
-
-.btn-checkout {
-  background: #e74c3c;
-  color: white;
-}
-
-.btn-checkout:hover:not(:disabled) {
-  background: #c0392b;
-  transform: scale(1.02);
-}
-
-.room-status {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  padding-top: 10px;
-  border-top: 1px solid #ecf0f1;
+.btn-qr:hover {
+    background: #8e44ad;
+    transform: scale(1.02);
 }
 
 .loading, .error {
-  text-align: center;
-  padding: 50px;
-  font-size: 1.2rem;
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
 }
 
 .error {
-  color: #e74c3c;
+    color: #e74c3c;
+}
+
+/* QR Modal */
+.qr-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.qr-modal-content {
+    position: relative;
+    max-width: 450px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.qr-close-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.qr-close-btn:hover {
+    background: #c0392b;
+    transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
-  .dashboard-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .rooms-grid {
-    grid-template-columns: 1fr;
-  }
+    .dashboard-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .rooms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .room-status-section {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+    
+    .last-updated {
+        width: 100%;
+        text-align: left;
+    }
 }

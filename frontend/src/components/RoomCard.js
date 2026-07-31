@@ -1,60 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './RoomCard.css';
 
-const RoomCard = ({ room, onCheckIn, onCheckOut }) => {
-  const isFull = room.currentOccupancy >= room.capacity;
-  const occupancyPercentage = (room.currentOccupancy / room.capacity) * 100;
+const RoomCard = ({ room, onQRClick, onRefresh }) => {
+    const [currentOccupancy, setCurrentOccupancy] = useState(room.currentOccupancy);
+    const [isCheckedIn, setIsCheckedIn] = useState(room.isCheckedIn);
+    const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  const getStatusClass = () => {
-    if (isFull) return 'room-full';
-    if (occupancyPercentage > 70) return 'room-warning';
-    return 'room-available';
-  };
+    useEffect(() => {
+        setCurrentOccupancy(room.currentOccupancy);
+        setIsCheckedIn(room.isCheckedIn);
+        setLastUpdate(new Date());
+    }, [room]);
 
-  return (
-    <div className={`room-card ${getStatusClass()}`}>
-      <div className="room-header">
-        <h2>{room.name}</h2>
-        <span className="room-status-badge">
-          {isFull ? '🔴 FULL' : '🟢 AVAILABLE'}
-        </span>
-      </div>
+    const isFull = currentOccupancy >= room.capacity;
+    const occupancyPercentage = (currentOccupancy / room.capacity) * 100;
+    
+    const getStatusClass = () => {
+        if (isFull) return 'room-full';
+        if (occupancyPercentage > 70) return 'room-warning';
+        return 'room-available';
+    };
 
-      <div className="room-occupancy">
-        <div className="occupancy-info">
-          <span className="occupancy-number">{room.currentOccupancy}</span>
-          <span className="occupancy-total">/ {room.capacity}</span>
+    const getStatusText = () => {
+        if (isFull) return '🔴 FULL';
+        if (occupancyPercentage > 70) return '🟠 NEAR FULL';
+        return '🟢 AVAILABLE';
+    };
+
+    const getStatusMessage = () => {
+        if (isCheckedIn) return '🟢 Checked In';
+        return '⚪ Checked Out';
+    };
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    };
+
+    return (
+        <div className={`room-card ${getStatusClass()}`}>
+            <div className="room-header">
+                <h2>{room.name}</h2>
+                <span className="room-status-badge">
+                    {getStatusText()}
+                </span>
+            </div>
+            
+            <div className="room-occupancy">
+                <div className="occupancy-info">
+                    <span className="occupancy-number">{currentOccupancy}</span>
+                    <span className="occupancy-total">/ {room.capacity}</span>
+                </div>
+                <div className="progress-bar">
+                    <div 
+                        className="progress-fill"
+                        style={{ width: `${Math.min(occupancyPercentage, 100)}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            <div className="room-status-section">
+                <div className="status-indicator">
+                    <span className="status-dot"></span>
+                    <span className="status-text">{getStatusMessage()}</span>
+                </div>
+                <div className="last-updated">
+                    <span className="update-time">🔄 {formatTime(lastUpdate)}</span>
+                </div>
+            </div>
+
+            {/* ONLY QR CODE BUTTON - NO Check-In/Check-Out */}
+            <div className="room-actions">
+                <button 
+                    className="btn btn-qr"
+                    onClick={() => onQRClick()}
+                >
+                    📱 QR Code
+                </button>
+            </div>
         </div>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${Math.min(occupancyPercentage, 100)}%` }}
-          ></div>
-        </div>
-      </div>
-
-      <div className="room-actions">
-        <button
-          className="btn btn-checkin"
-          onClick={() => onCheckIn(room.id)}
-          disabled={isFull}
-        >
-          ✅ Check In
-        </button>
-        <button
-          className="btn btn-checkout"
-          onClick={() => onCheckOut(room.id)}
-          disabled={room.currentOccupancy === 0}
-        >
-          🚪 Check Out
-        </button>
-      </div>
-
-      <div className="room-status">
-        Status: {room.isCheckedIn ? '🟢 Checked In' : '⚪ Checked Out'}
-      </div>
-    </div>
-  );
+    );
 };
 
 export default RoomCard;
