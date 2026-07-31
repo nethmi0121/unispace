@@ -1,0 +1,21 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "feature/dashboard-v2",
+    "frontend-room-management",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "feature/dashboard-v2": "main",
+    "frontend-room-management": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "feature/dashboard-v2",
+    "frontend-room-management",
+    "origin"
+  ]
+}

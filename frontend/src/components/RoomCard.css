@@ -10,15 +10,62 @@
     margin-bottom: 40px;
 }
 
-.dashboard-header h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 10px;
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.dashboard-header p {
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    color: #27ae60;
+    font-size: 0.85rem;
+}
+
+.live-dot {
+    width: 10px;
+    height: 10px;
+    background: #27ae60;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 1s infinite;
+}
+
+.last-update-header {
     color: #7f8c8d;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
+}
+
+.btn-refresh-header {
+    background: #3498db;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh-header:hover {
+    background: #2980b9;
+    transform: rotate(180deg);
 }
 
 .rooms-grid {
@@ -112,6 +159,12 @@
     color: #7f8c8d;
     margin-left: 5px;
     font-size: 1rem;
+}
+
+.occupancy-percent {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-left: 8px;
 }
 
 .progress-bar {
@@ -285,6 +338,16 @@
     
     .rooms-grid {
         grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .header-status {
+        width: 100%;
+        justify-content: center;
     }
 
     .room-status-section {

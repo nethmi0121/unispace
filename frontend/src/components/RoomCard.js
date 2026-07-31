@@ -28,8 +28,8 @@ const RoomCard = ({ room, onQRClick, onRefresh }) => {
     };
 
     const getStatusMessage = () => {
-        if (isCheckedIn) return '🟢 Checked In';
-        return '⚪ Checked Out';
+        if (isCheckedIn) return '🟢 Currently Checked In';
+        return '⚪ Not Checked In';
     };
 
     const formatTime = (date) => {
@@ -53,6 +53,9 @@ const RoomCard = ({ room, onQRClick, onRefresh }) => {
                 <div className="occupancy-info">
                     <span className="occupancy-number">{currentOccupancy}</span>
                     <span className="occupancy-total">/ {room.capacity}</span>
+                    <span className="occupancy-percent">
+                        ({Math.round(occupancyPercentage)}%)
+                    </span>
                 </div>
                 <div className="progress-bar">
                     <div 
@@ -72,7 +75,6 @@ const RoomCard = ({ room, onQRClick, onRefresh }) => {
                 </div>
             </div>
 
-            {/* ONLY QR CODE BUTTON - NO Check-In/Check-Out */}
             <div className="room-actions">
                 <button 
                     className="btn btn-qr"
