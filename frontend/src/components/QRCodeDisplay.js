@@ -10,7 +10,6 @@ const QRCodeDisplay = ({ roomId, roomName, onClose, onCheckIn }) => {
     const [timeLeft, setTimeLeft] = useState(600);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [scanStatus, setScanStatus] = useState('');
-    const [isScanned, setIsScanned] = useState(false);
 
     useEffect(() => {
         fetchQRCode();
@@ -44,7 +43,6 @@ const QRCodeDisplay = ({ roomId, roomName, onClose, onCheckIn }) => {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         setScanStatus('');
-        setIsScanned(false);
         try {
             await axios.post(`/api/rooms/${roomId}/refreshqr`);
             await fetchQRCode();
@@ -56,47 +54,8 @@ const QRCodeDisplay = ({ roomId, roomName, onClose, onCheckIn }) => {
         }
     };
 
-    // This will be triggered when phone scans the QR code
-    // The QR code data is passed automatically when scanned
-    const handleQRScan = async () => {
-        if (isScanned) return;
-        
-        try {
-            setIsScanned(true);
-            // Get the token from qrData
-            const token = qrData?.qrData?.t || qrData?.qrData?.token;
-            
-            if (!token) {
-                setScanStatus('❌ Invalid QR code');
-                setIsScanned(false);
-                return;
-            }
-
-            // Send scan request to backend
-            const response = await axios.post(`/api/rooms/${roomId}/scan`, {
-                token: token
-            });
-
-            if (response.data.success) {
-                setScanStatus(`✅ ${response.data.message}`);
-                // Refresh the dashboard
-                if (onCheckIn) {
-                    await onCheckIn();
-                }
-                // Close modal after 2 seconds
-                setTimeout(() => onClose(), 2000);
-            }
-        } catch (err) {
-            const errorMsg = err.response?.data?.error || err.message;
-            setScanStatus(`❌ ${errorMsg}`);
-            setIsScanned(false);
-        }
-    };
-
     const getQRValue = () => {
         if (!qrData || !qrData.qrData) return '{}';
-        // This data will be encoded in the QR code
-        // When scanned with phone, it will trigger check-in
         return JSON.stringify({
             roomId: roomId,
             token: qrData.qrData.t || qrData.qrData.token,
@@ -124,7 +83,6 @@ const QRCodeDisplay = ({ roomId, roomName, onClose, onCheckIn }) => {
                         size={250}
                         level="L"
                         includeMargin={true}
-                        onClick={handleQRScan}
                     />
                 )}
                 <div className="qr-overlay">

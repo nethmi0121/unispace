@@ -1,10 +1,8 @@
 const QRCode = require('qrcode');
 const speakeasy = require('speakeasy');
 
-// Store QR code secrets for each room
 const roomSecrets = new Map();
 
-// Generate a unique secret for a room
 function generateRoomSecret(roomId) {
     const secret = speakeasy.generateSecret({
         name: `Room ${roomId}`,
@@ -14,7 +12,6 @@ function generateRoomSecret(roomId) {
     return secret.base32;
 }
 
-// Get or create room secret
 function getRoomSecret(roomId) {
     if (!roomSecrets.has(roomId)) {
         return generateRoomSecret(roomId);
@@ -22,7 +19,6 @@ function getRoomSecret(roomId) {
     return roomSecrets.get(roomId);
 }
 
-// Generate QR code data (short format)
 function generateQRData(roomId, secret) {
     const timestamp = Math.floor(Date.now() / 600000);
     const token = speakeasy.totp({
@@ -34,7 +30,6 @@ function generateQRData(roomId, secret) {
     
     console.log(`Generated token for room ${roomId}:`, { token, timestamp });
     
-    // Return with both short and long keys for compatibility
     return {
         r: roomId,
         t: token,
@@ -45,7 +40,6 @@ function generateQRData(roomId, secret) {
     };
 }
 
-// Generate QR code image
 async function generateQRCodeImage(roomId) {
     try {
         const secret = getRoomSecret(roomId);
@@ -65,7 +59,7 @@ async function generateQRCodeImage(roomId) {
         return {
             qrImage: qrImage,
             qrData: qrData,
-            expiresIn: 600 // 10 minutes
+            expiresIn: 600
         };
     } catch (error) {
         console.error('Error generating QR code:', error);
@@ -73,7 +67,6 @@ async function generateQRCodeImage(roomId) {
     }
 }
 
-// Verify QR code token
 function verifyQRCode(roomId, token) {
     const secret = roomSecrets.get(roomId);
     if (!secret) return false;
@@ -89,7 +82,6 @@ function verifyQRCode(roomId, token) {
     return verified;
 }
 
-// Refresh QR code
 async function refreshQRCode(roomId) {
     generateRoomSecret(roomId);
     return await generateQRCodeImage(roomId);

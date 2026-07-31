@@ -1,10 +1,9 @@
 const express = require('express');
-<<<<<<< HEAD
 const cors = require('cors');
 const qrService = require('./qrService');
 
 const app = express();
-const PORT = 5002;
+const PORT = 5001;
 
 app.use(cors());
 app.use(express.json());
@@ -104,7 +103,6 @@ app.post('/api/rooms/:id/scan', async (req, res) => {
         return res.status(404).json({ error: 'Room not found' });
     }
     
-    // Verify the QR code token
     const isValid = qrService.verifyQRCode(roomId, token);
     console.log(`Token verification for room ${roomId}:`, { isValid, token });
     
@@ -114,12 +112,10 @@ app.post('/api/rooms/:id/scan', async (req, res) => {
         });
     }
     
-    // Check if room is full
     if (room.currentOccupancy >= room.capacity) {
         return res.status(400).json({ error: 'Room is full!' });
     }
     
-    // Check in the student
     room.currentOccupancy += 1;
     room.isCheckedIn = true;
     
@@ -174,32 +170,4 @@ refreshAllQRCodes().then(() => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-=======
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const analyticsRoutes = require('./routes/analytics');
-const authRoutes = require('./routes/auth'); 
-const authMiddleware = require('./middleware/auth');
-const studentRoutes = require('./routes/studentRoutes');
-
-dotenv.config();
-
-const app = express();
-
-app.use(cors());            
-app.use(express.json());     
-
-app.use('/api/auth', authRoutes);
-app.use('/api/analytics', authMiddleware, analyticsRoutes);
-app.use('/api/rooms', studentRoutes);
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected successfully!"))
-  .catch((err) => console.error("Database connection error:", err));
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running cleanly on port ${PORT}`);
->>>>>>> d59ef6001316645005d8e9f291e63708666f118c
 });

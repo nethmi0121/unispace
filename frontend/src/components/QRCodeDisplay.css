@@ -50,11 +50,6 @@
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin: 10px 0;
-    cursor: pointer;
-}
-
-.qr-code-wrapper:hover {
-    box-shadow: 0 4px 20px rgba(155, 89, 182, 0.3);
 }
 
 .qr-overlay {
