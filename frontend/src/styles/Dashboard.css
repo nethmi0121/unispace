@@ -1,0 +1,13 @@
+.dashboard {
+  width: 80%;
+  margin: 30px auto;
+}
+
+.dashboard h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dashboard h2 {
+  margin-top: 30px;
+}
