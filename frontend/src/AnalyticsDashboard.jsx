@@ -12,7 +12,6 @@ const AnalyticsDashboard = () => {
 
   const fetchAnalyticsData = async () => {
     try {
-      // Get auth token from localStorage if your app stores it there (e.g., 'token' or 'userToken')
       const token = localStorage.getItem('token'); 
 
       const response = await fetch('http://localhost:5000/api/analytics/peak-hours', {
@@ -32,7 +31,6 @@ const AnalyticsDashboard = () => {
 
       const data = await response.json();
 
-      // Ensure data is strictly an array to keep Recharts happy
       if (Array.isArray(data)) {
         setTrafficData(data);
       } else if (Array.isArray(data?.data)) {
@@ -44,7 +42,7 @@ const AnalyticsDashboard = () => {
     } catch (err) {
       console.error('Error fetching analytics data:', err);
       setError(err.message || 'Failed to load analytics.');
-      setTrafficData([]); // Ensure trafficData remains an array on failure
+      setTrafficData([]); 
     } finally {
       setLoading(false);
     }

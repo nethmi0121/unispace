@@ -1,114 +1,191 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import RoomForm from "./RoomForm";
 import RoomCard from "./RoomCard";
-
 import "../styles/Dashboard.css";
 
+const API_BASE_URL = "http://localhost:5000/api/rooms";
+
 function AdminDashboard() {
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      name: "Lab 101",
-      location: "Block A",
-      capacity: 40,
-      currentCount: 12,
-    },
-  ]);
+  const [rooms, setRooms] = useState([]);
+
+  // Fetch rooms from backend
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch(API_BASE_URL);
+      const data = await response.json();
+      setRooms(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching rooms:", error);
+    }
+  };
+
+  // Load rooms when component mounts
+  useEffect(() => {
+    fetchRooms();
+  }, []);
 
   // Add Room
-  const addRoom = (newRoom) => {
-    const exists = rooms.find(
-      (room) =>
-        room.name.toLowerCase() === newRoom.name.toLowerCase()
-    );
+  const addRoom = async (newRoom) => {
+    try {
+      const payload = {
+        roomName: newRoom.name,
+        location: newRoom.location,
+        capacity: Number(newRoom.capacity),
+      };
 
-    if (exists) {
-      alert("Room name already exists.");
-      return;
+      const response = await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to add room.");
+        return;
+      }
+
+      fetchRooms();
+    } catch (error) {
+      console.error("Error adding room:", error);
     }
-
-    setRooms([
-      ...rooms,
-      {
-        id: Date.now(),
-        ...newRoom,
-        currentCount: 0,
-      },
-    ]);
   };
 
   // Delete Room
-  const deleteRoom = (id) => {
-    setRooms(rooms.filter((room) => room.id !== id));
+  const deleteRoom = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message || "Failed to delete room.");
+        return;
+      }
+
+      fetchRooms();
+    } catch (error) {
+      console.error("Error deleting room:", error);
+    }
   };
 
-  // Reset Current Count
-  const resetCount = (id) => {
-    setRooms(
-      rooms.map((room) =>
-        room.id === id
-          ? { ...room, currentCount: 0 }
-          : room
-      )
-    );
+  // Reset Count
+  const resetCount = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/reset/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message || "Failed to reset count.");
+        return;
+      }
+
+      fetchRooms();
+    } catch (error) {
+      console.error("Error resetting count:", error);
+    }
   };
 
   // Edit Room
-  const editRoom = (id) => {
-    const room = rooms.find((room) => room.id === id);
+  const editRoom = async (id) => {
+    const room = rooms.find((r) => (r._id || r.id) === id);
 
-    const newName = prompt("Enter new room name:", room.name);
-    const newLocation = prompt("Enter new location:", room.location);
-    const newCapacity = prompt("Enter new capacity:", room.capacity);
+    if (!room) return;
 
-    if (!newName || !newLocation || !newCapacity) {
-      return;
-    }
+    const newName = prompt(
+      "Enter new room name:",
+      room.roomName || room.name
+    );
+
+    if (newName === null) return;
+
+    const newLocation = prompt(
+      "Enter new location:",
+      room.location
+    );
+
+    if (newLocation === null) return;
+
+    const newCapacity = prompt(
+      "Enter new capacity:",
+      room.capacity
+    );
+
+    if (newCapacity === null) return;
 
     if (Number(newCapacity) <= 0) {
       alert("Capacity must be greater than zero.");
       return;
     }
 
-    setRooms(
-      rooms.map((room) =>
-        room.id === id
-          ? {
-              ...room,
-              name: newName,
-              location: newLocation,
-              capacity: Number(newCapacity),
-            }
-          : room
-      )
-    );
+    try {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+        body: JSON.stringify({
+          roomName: newName,
+          location: newLocation,
+          capacity: Number(newCapacity),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message || "Failed to update room.");
+        return;
+      }
+
+      fetchRooms();
+    } catch (error) {
+      console.error("Error updating room:", error);
+    }
   };
 
   return (
-    <div>
+    <div className="dashboard">
+      <h1>Admin Dashboard</h1>
 
-      <div className="dashboard">
-        <h1>Admin Dashboard</h1>
+      <RoomForm addRoom={addRoom} />
 
-        <RoomForm addRoom={addRoom} />
+      <h2>Room List</h2>
 
-        <h2>Room List</h2>
+      {rooms.length === 0 ? (
+        <p>No rooms available.</p>
+      ) : (
+        rooms.map((room) => {
+          const roomId = room._id || room.id;
 
-        {rooms.length === 0 ? (
-          <p>No rooms available.</p>
-        ) : (
-          rooms.map((room) => (
+          return (
             <RoomCard
-              key={room.id}
-              room={room}
+              key={roomId}
+              room={{
+                ...room,
+                id: roomId,
+                name: room.roomName || room.name,
+              }}
               deleteRoom={deleteRoom}
               resetCount={resetCount}
               editRoom={editRoom}
             />
-          ))
-        )}
-      </div>
+          );
+        })
+      )}
     </div>
   );
 }

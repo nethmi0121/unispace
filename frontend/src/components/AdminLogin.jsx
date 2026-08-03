@@ -19,7 +19,7 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
       
       if (response.ok) {
-        // Save the web token in localStorage so the browser remembers it
+        // Saving the web token in localStorage
         localStorage.setItem('token', data.token);
         onLoginSuccess();
       } else {
