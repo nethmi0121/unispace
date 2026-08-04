@@ -1,31 +1,46 @@
 .room-form {
-  background: #f4f4f4;
-  padding: 20px;
-  border-radius: 8px;
+  background: #fbf7ef;
+  padding: 22px;
+  border-radius: 12px;
   margin-bottom: 30px;
+  border: 1px solid #f0e6d2;
+  font-family: 'Work Sans', sans-serif;
 }
 
 .room-form h2 {
   margin-bottom: 15px;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: #3a0f18;
 }
 
 .room-form input {
   width: 100%;
-  padding: 10px;
+  padding: 10px 12px;
   margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #e8ddc8;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 14px;
+}
+
+.room-form input:focus {
+  outline: none;
+  border-color: #c9a227;
 }
 
 .room-form button {
-  padding: 10px 20px;
-  background-color: #003366;
+  padding: 10px 22px;
+  background-color: #8a2b3b;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 7px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .room-form button:hover {
-  background-color: #0055aa;
+  background-color: #711f2c;
 }

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import RoomForm from "./RoomForm";
 import RoomCard from "./RoomCard";
+import EditRoomModal from "./EditRoomModal"; // 👈 Integrated Edit Modal
 import "../styles/Dashboard.css";
 
 const API_BASE_URL = "http://localhost:5000/api/rooms";
 
 function AdminDashboard() {
   const [rooms, setRooms] = useState([]);
+  const [editingRoom, setEditingRoom] = useState(null); // 👈 Tracks room being edited in modal
 
   // Fetch rooms from backend
   const fetchRooms = async () => {
@@ -57,6 +59,8 @@ function AdminDashboard() {
 
   // Delete Room
   const deleteRoom = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this room?")) return;
+
     try {
       const response = await fetch(`${API_BASE_URL}/${id}`, {
         method: "DELETE",
@@ -99,38 +103,8 @@ function AdminDashboard() {
     }
   };
 
-  // Edit Room
-  const editRoom = async (id) => {
-    const room = rooms.find((r) => (r._id || r.id) === id);
-
-    if (!room) return;
-
-    const newName = prompt(
-      "Enter new room name:",
-      room.roomName || room.name
-    );
-
-    if (newName === null) return;
-
-    const newLocation = prompt(
-      "Enter new location:",
-      room.location
-    );
-
-    if (newLocation === null) return;
-
-    const newCapacity = prompt(
-      "Enter new capacity:",
-      room.capacity
-    );
-
-    if (newCapacity === null) return;
-
-    if (Number(newCapacity) <= 0) {
-      alert("Capacity must be greater than zero.");
-      return;
-    }
-
+  // Save updated room from Edit Modal
+  const handleSaveUpdatedRoom = async (id, updatedData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/${id}`, {
         method: "PUT",
@@ -138,11 +112,7 @@ function AdminDashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
-        body: JSON.stringify({
-          roomName: newName,
-          location: newLocation,
-          capacity: Number(newCapacity),
-        }),
+        body: JSON.stringify(updatedData),
       });
 
       if (!response.ok) {
@@ -151,7 +121,8 @@ function AdminDashboard() {
         return;
       }
 
-      fetchRooms();
+      setEditingRoom(null); // Close Modal
+      fetchRooms(); // Refresh rooms list
     } catch (error) {
       console.error("Error updating room:", error);
     }
@@ -168,23 +139,34 @@ function AdminDashboard() {
       {rooms.length === 0 ? (
         <p>No rooms available.</p>
       ) : (
-        rooms.map((room) => {
-          const roomId = room._id || room.id;
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
+          {rooms.map((room) => {
+            const roomId = room._id || room.id;
 
-          return (
-            <RoomCard
-              key={roomId}
-              room={{
-                ...room,
-                id: roomId,
-                name: room.roomName || room.name,
-              }}
-              deleteRoom={deleteRoom}
-              resetCount={resetCount}
-              editRoom={editRoom}
-            />
-          );
-        })
+            return (
+              <RoomCard
+                key={roomId}
+                room={{
+                  ...room,
+                  id: roomId,
+                  name: room.roomName || room.name,
+                }}
+                deleteRoom={deleteRoom}
+                resetCount={resetCount}
+                onEdit={() => setEditingRoom(room)} // 👈 Triggers modal opening
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {/* ✏️ Edit Room Modal */}
+      {editingRoom && (
+        <EditRoomModal
+          room={editingRoom}
+          onSave={handleSaveUpdatedRoom}
+          onClose={() => setEditingRoom(null)}
+        />
       )}
     </div>
   );

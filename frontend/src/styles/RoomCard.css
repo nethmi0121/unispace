@@ -1,18 +1,31 @@
 .room-card {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #f0e6d2;
+  border-left: 5px solid #c9a227;
+  border-radius: 12px;
   padding: 20px;
   margin-top: 20px;
+  box-shadow: 0 3px 10px rgba(58, 15, 24, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.room-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(58, 15, 24, 0.1);
 }
 
 .room-card h3 {
   margin-bottom: 10px;
-  color: #003366;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: #3a0f18;
 }
 
 .room-card p {
   margin: 8px 0;
+  color: #5a4a3a;
+  font-size: 0.9rem;
 }
 
 .button-group {
@@ -21,12 +34,27 @@
 
 .button-group button {
   margin-right: 10px;
-  padding: 8px 15px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
+  background-color: #c9a227;
+  color: #3a2c05;
+  transition: opacity 0.15s ease;
 }
 
 .button-group button:hover {
   opacity: 0.9;
+}
+
+.button-group button.danger {
+  background-color: #8a2b3b;
+  color: #fff;
+}
+
+.button-group button.secondary {
+  background-color: #3d5a6c;
+  color: #fff;
 }

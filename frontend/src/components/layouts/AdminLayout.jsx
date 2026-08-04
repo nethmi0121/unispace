@@ -1,24 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminDashboard from '../AdminDashboard';
+import AdminDoorQRPage from '../AdminDoorQRPage'; // Import new QR page
 import Login from '../AdminLogin';
+import '../../styles/PortalNavbar.css';
 
 function AdminLayout({ isAuthenticated, onLoginSuccess, onLogout, onHomeClick }) {
+  // Navigation state inside Admin: 'dashboard' | 'door-qrs'
+  const [adminView, setAdminView] = useState('dashboard');
+
   if (!isAuthenticated) {
     return <Login onLoginSuccess={onLoginSuccess} />;
   }
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 30px', background: '#1e3a8a', color: 'white' }}>
-        <button onClick={onHomeClick} style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>
-          🏠 Home
-        </button>
-        <h2 style={{ margin: 0 }}>Admin Dashboard</h2>
-        <button onClick={onLogout} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+      {/* Admin Navigation Bar */}
+      <div className="portal-navbar">
+        <div className="nav-left">
+          <button className="home-btn" onClick={onHomeClick}>
+            Home
+          </button>
+          <h2>Admin portal</h2>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="portal-tabs">
+          <button
+            className={`tab-btn ${adminView === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setAdminView('dashboard')}
+          >
+            Manage rooms
+          </button>
+
+          <button
+            className={`tab-btn ${adminView === 'door-qrs' ? 'active' : ''}`}
+            onClick={() => setAdminView('door-qrs')}
+          >
+            Room door QRs
+          </button>
+        </div>
+
+        <button className="logout-btn" onClick={onLogout}>
           Logout
         </button>
       </div>
-      <AdminDashboard />
+
+      {/* Render selected Admin View */}
+      {adminView === 'dashboard' && <AdminDashboard />}
+      {adminView === 'door-qrs' && <AdminDoorQRPage onBack={() => setAdminView('dashboard')} />}
     </>
   );
 }

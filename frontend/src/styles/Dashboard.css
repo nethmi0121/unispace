@@ -1,13 +1,21 @@
 .dashboard {
   width: 80%;
   margin: 30px auto;
+  font-family: 'Work Sans', sans-serif;
 }
 
 .dashboard h1 {
   text-align: center;
   margin-bottom: 20px;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: #3a0f18;
 }
 
 .dashboard h2 {
   margin-top: 30px;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #3a0f18;
 }

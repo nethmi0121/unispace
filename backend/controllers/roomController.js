@@ -1,4 +1,11 @@
 const Room = require("../models/Room");
+const Student = require("../models/Student");
+const UsageLog = require("../models/UsageLog");
+const qrService = require("../services/qrService");
+
+// ==========================================
+// 1. STANDARD ROOM CRUD CONTROLLERS
+// ==========================================
 
 // Create Room
 const createRoom = async (req, res) => {
@@ -58,7 +65,7 @@ const resetCount = async (req, res) => {
   try {
     const room = await Room.findByIdAndUpdate(
       req.params.id,
-      { currentCount: 0 },
+      { currentCount: 0, checkedInStudents: [] },
       { new: true }
     );
     res.json(room);
@@ -67,7 +74,7 @@ const resetCount = async (req, res) => {
   }
 };
 
-// Check-in: +1 occupancy
+// Check-in (Direct API button backup)
 const checkInRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -83,13 +90,19 @@ const checkInRoom = async (req, res) => {
     room.currentCount += 1;
     await room.save();
 
+    // Log this transaction so it shows up in peak-hours analytics
+    await UsageLog.create({
+      roomName: room.roomName,
+      actionType: 'check-in',
+    });
+
     res.json(room);
   } catch (error) {
     res.status(500).json({ error: 'Server error during check-in' });
   }
 };
 
-// Check-out: -1 occupancy
+// Check-out (Direct API button backup)
 const checkOutRoom = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -105,13 +118,154 @@ const checkOutRoom = async (req, res) => {
     room.currentCount -= 1;
     await room.save();
 
+    // Log this transaction so it shows up in peak-hours analytics
+    await UsageLog.create({
+      roomName: room.roomName,
+      actionType: 'check-out',
+    });
+
     res.json(room);
   } catch (error) {
     res.status(500).json({ error: 'Server error during check-out' });
   }
 };
 
-// 🚨 Single export object containing ALL 7 functions!
+// ==========================================
+// 2. TOTP & QR CODE CONTROLLERS
+// ==========================================
+
+// Live 10-minute TOTP QR Code Display
+const getRoomQRCode = async (req, res) => {
+  try {
+    const roomId = req.params.id;
+    const room = await Room.findById(roomId);
+
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    const qrData = await qrService.generateQRCodeImage(roomId);
+
+    res.json({
+      roomId: room._id,
+      roomName: room.roomName,
+      qrImage: qrData.qrImage,
+      qrData: qrData.qrData,
+      expiresIn: qrData.expiresIn // 600 seconds (10 mins)
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate QR code" });
+  }
+};
+
+// Scan QR to CHECK IN
+const scanAndCheckIn = async (req, res) => {
+  try {
+    const roomId = req.params.id;
+    const { token, studentId } = req.body;
+
+    if (!token || !studentId) {
+      return res.status(400).json({ error: "QR token and Student ID are required" });
+    }
+
+    // 1. Verify TOTP token
+    const isValid = qrService.verifyQRCode(roomId, token);
+    if (!isValid) {
+      return res.status(400).json({ error: "Invalid or expired QR code. Scan the updated door display." });
+    }
+
+    // 2. Prevent checking into ANY room if already checked into one across the system
+    const allRooms = await Room.find({});
+    const alreadyCheckedInRoom = allRooms.find(r => 
+      r.checkedInStudents && r.checkedInStudents.some(id => id.toString() === studentId.toString())
+    );
+
+    if (alreadyCheckedInRoom) {
+      return res.status(400).json({
+        error: `You are already checked into ${alreadyCheckedInRoom.roomName || alreadyCheckedInRoom.name}. Please check out there first!`
+      });
+    }
+
+    const room = await Room.findById(roomId);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    if (room.currentCount >= room.capacity) {
+      return res.status(400).json({ error: "Room is full!" });
+    }
+
+    // 3. Add student ID & increment count
+    room.currentCount += 1;
+    if (!room.checkedInStudents) room.checkedInStudents = [];
+    room.checkedInStudents.push(studentId);
+    
+    await room.save();
+
+    // Log this transaction so it shows up in peak-hours analytics
+    await UsageLog.create({
+      roomName: room.roomName,
+      actionType: 'check-in',
+    });
+
+    res.json({
+      success: true,
+      message: `Successfully checked into ${room.roomName || room.name}`,
+      room: room
+    });
+  } catch (error) {
+    console.error("Check-in Error:", error);
+    res.status(500).json({ error: "Server error during check-in: " + error.message });
+  }
+};
+
+// Scan QR to CHECK OUT
+const scanAndCheckOut = async (req, res) => {
+  try {
+    const roomId = req.params.id;
+    const { token, studentId } = req.body;
+
+    if (!token || !studentId) {
+      return res.status(400).json({ error: "QR token and Student ID are required" });
+    }
+
+    // 1. Verify TOTP token
+    const isValid = qrService.verifyQRCode(roomId, token);
+    if (!isValid) {
+      return res.status(400).json({ error: "Invalid or expired QR code." });
+    }
+
+    const room = await Room.findById(roomId);
+    if (!room) return res.status(404).json({ error: "Room not found" });
+
+    // 2. Find student index using string representation comparison
+    const studentIndex = room.checkedInStudents 
+      ? room.checkedInStudents.findIndex(id => id.toString() === studentId.toString())
+      : -1;
+
+    if (studentIndex === -1) {
+      return res.status(400).json({ error: "You are not checked into this room." });
+    }
+
+    // 3. Remove student and decrement count
+    room.currentCount = Math.max(0, room.currentCount - 1);
+    room.checkedInStudents.splice(studentIndex, 1);
+    await room.save();
+
+    // Log this transaction so it shows up in peak-hours analytics
+    await UsageLog.create({
+      roomName: room.roomName,
+      actionType: 'check-out',
+    });
+
+    res.json({
+      success: true,
+      message: `Successfully checked out of ${room.roomName || room.name}`,
+      room: room
+    });
+  } catch (error) {
+    console.error("Check-out Error:", error);
+    res.status(500).json({ error: "Server error during check-out: " + error.message });
+  }
+};
+
+// Export ALL functions cleanly
 module.exports = {
   createRoom,
   getRooms,
@@ -119,5 +273,8 @@ module.exports = {
   deleteRoom,
   resetCount,
   checkInRoom,
-  checkOutRoom
+  checkOutRoom,
+  getRoomQRCode,
+  scanAndCheckIn,
+  scanAndCheckOut
 };

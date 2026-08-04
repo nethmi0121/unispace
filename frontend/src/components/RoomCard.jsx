@@ -1,12 +1,12 @@
 import "../styles/RoomCard.css";
 
-function RoomCard({ room, deleteRoom, resetCount, editRoom }) {
-  // Extract MongoDB's _id cleanly (falling back to id if necessary)
+function RoomCard({ room, deleteRoom, resetCount, onEdit }) {
   const roomId = room._id || room.id;
+  const roomName = room.roomName || room.name;
 
   return (
     <div className="room-card">
-      <h3>Room: {room.roomName || room.name}</h3>
+      <h3>{roomName}</h3>
 
       <p>
         <strong>Location:</strong> {room.location}
@@ -17,20 +17,18 @@ function RoomCard({ room, deleteRoom, resetCount, editRoom }) {
       </p>
 
       <p>
-        <strong>Current Count:</strong> {room.currentCount}
+        <strong>Current count:</strong> {room.currentCount}
       </p>
 
       <div className="button-group">
-        <button onClick={() => editRoom(roomId)}>
+        <button className="secondary" onClick={onEdit}>
           Edit
         </button>
-
-        <button onClick={() => deleteRoom(roomId)}>
+        <button className="danger" onClick={() => deleteRoom(roomId)}>
           Delete
         </button>
-
         <button onClick={() => resetCount(roomId)}>
-          Reset Count
+          Reset count
         </button>
       </div>
     </div>
