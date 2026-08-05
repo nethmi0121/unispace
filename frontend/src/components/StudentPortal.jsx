@@ -43,86 +43,129 @@ function StudentPortal() {
     }
   };
 
+  const bgImageUrl =
+    "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80";
+
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <div className="dashboard-eyebrow">University of Colombo</div>
-        <h1>Student room portal</h1>
-        <p>Scan the door tablet's live QR code to check in or out.</p>
-      </div>
-
-      {loading ? (
-        <div className="loading">Loading rooms…</div>
-      ) : error ? (
-        <div className="error">{error}</div>
-      ) : (
-        <div className="rooms-grid">
-          {rooms.map((room) => {
-            const isFull = room.currentCount >= room.capacity;
-            const occupancyPercentage = Math.round((room.currentCount / room.capacity) * 100);
-            const status = getRoomStatus(room.currentCount, room.capacity);
-
-            return (
-              <div key={room._id} className={`room-card room-${status}`}>
-                <div className="room-header">
-                  <h2>{room.roomName || room.name}</h2>
-                  <span className="room-status-badge">{STATUS_LABEL[status]}</span>
-                </div>
-
-                <p className="room-location">{room.location}</p>
-
-                <div className="room-occupancy">
-                  <div className="occupancy-info">
-                    <span className="occupancy-number">{room.currentCount}</span>
-                    <span className="occupancy-total">
-                      / {room.capacity} · {occupancyPercentage}%
-                    </span>
-                  </div>
-                  <div className="progress-bar">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${Math.min(occupancyPercentage, 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Action buttons: both require QR scanning */}
-                <div className="room-actions">
-                  <button
-                    className="btn btn-checkin"
-                    onClick={() => setScanAction({ room, mode: 'checkin' })}
-                    disabled={isFull}
-                  >
-                    Scan check in
-                  </button>
-
-                  <button
-                    className="btn btn-checkout"
-                    onClick={() => setScanAction({ room, mode: 'checkout' })}
-                    disabled={room.currentCount === 0}
-                  >
-                    Scan check out
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        position: "relative",
+        left: "50%",
+        transform: "translateX(-50%)",
+        backgroundImage: `
+          linear-gradient(180deg, rgba(44, 11, 20, 0.88) 0%, rgba(92, 27, 38, 0.85) 50%, rgba(58, 15, 24, 0.92) 100%),
+          url("${bgImageUrl}")
+        `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+        padding: "32px 24px",
+        boxSizing: "border-box",
+        margin: 0,
+      }}
+    >
+      <div className="dashboard" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <div className="dashboard-header" style={{ textAlign: "center", color: "#fffbf4" }}>
+          <div className="dashboard-eyebrow" style={{ color: "#e8c874", letterSpacing: "0.1em" }}>
+            UNIVERSITY OF COLOMBO
+          </div>
+          <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: "36px", margin: "8px 0" }}>
+            Student room portal
+          </h1>
+          <p style={{ color: "#d8b9a8" }}>
+            Scan the door tablet's live QR code to check in or out.
+          </p>
         </div>
-      )}
 
-      {/* Modal to scan the QR code */}
-      {scanAction.room && (
-        <QRScanModal
-          roomId={scanAction.room._id}
-          roomName={scanAction.room.roomName || scanAction.room.name}
-          mode={scanAction.mode}
-          onClose={() => setScanAction({ room: null, mode: 'checkin' })}
-          onSuccess={() => {
-            setScanAction({ room: null, mode: 'checkin' });
-            fetchRooms(); // Refresh room counts automatically
-          }}
-        />
-      )}
+        {loading ? (
+          <div className="loading" style={{ color: "#fffbf4", textAlign: "center", padding: "40px" }}>
+            Loading rooms…
+          </div>
+        ) : error ? (
+          <div className="error" style={{ color: "#ff8b8b", textAlign: "center", padding: "40px" }}>
+            {error}
+          </div>
+        ) : (
+          <div className="rooms-grid">
+            {rooms.map((room) => {
+              const isFull = room.currentCount >= room.capacity;
+              const occupancyPercentage = Math.round((room.currentCount / room.capacity) * 100);
+              const status = getRoomStatus(room.currentCount, room.capacity);
+
+              return (
+                <div
+                  key={room._id}
+                  className={`room-card room-${status}`}
+                  style={{
+                    background: "rgba(255, 251, 244, 0.95)",
+                    backdropFilter: "blur(6px)",
+                    borderRadius: "14px",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <div className="room-header">
+                    <h2>{room.roomName || room.name}</h2>
+                    <span className="room-status-badge">{STATUS_LABEL[status]}</span>
+                  </div>
+
+                  <p className="room-location">{room.location}</p>
+
+                  <div className="room-occupancy">
+                    <div className="occupancy-info">
+                      <span className="occupancy-number">{room.currentCount}</span>
+                      <span className="occupancy-total">
+                        / {room.capacity} · {occupancyPercentage}%
+                      </span>
+                    </div>
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${Math.min(occupancyPercentage, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action buttons: both require QR scanning */}
+                  <div className="room-actions">
+                    <button
+                      className="btn btn-checkin"
+                      onClick={() => setScanAction({ room, mode: 'checkin' })}
+                      disabled={isFull}
+                    >
+                      Scan check in
+                    </button>
+
+                    <button
+                      className="btn btn-checkout"
+                      onClick={() => setScanAction({ room, mode: 'checkout' })}
+                      disabled={room.currentCount === 0}
+                    >
+                      Scan check out
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Modal to scan the QR code */}
+        {scanAction.room && (
+          <QRScanModal
+            roomId={scanAction.room._id}
+            roomName={scanAction.room.roomName || scanAction.room.name}
+            mode={scanAction.mode}
+            onClose={() => setScanAction({ room: null, mode: 'checkin' })}
+            onSuccess={() => {
+              setScanAction({ room: null, mode: 'checkin' });
+              fetchRooms(); // Refresh room counts automatically
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
