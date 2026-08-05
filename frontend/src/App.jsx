@@ -4,6 +4,8 @@ import StudentLayout from "./components/layouts/StudentLayout";
 import AdminLayout from "./components/layouts/AdminLayout";
 import Dashboard from "./components/Dashboard";
 import AnalyticsDashboard from "./AnalyticsDashboard";
+import PortalFooter from "./components/PortalFooter"; // 👈 Import Footer
+import "./styles/PortalNavbar.css";
 import "./App.css";
 
 function App() {
@@ -68,18 +70,12 @@ function App() {
       {/* 4. ANALYTICS DASHBOARD VIEW */}
       {page === "analytics" && (
         <div className="analytics-container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 30px', background: '#1e3a8a', color: 'white', alignItems: 'center' }}>
-            <button 
-              onClick={() => setPage("landing")}
-              style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              🏠 Home
+          <div className="portal-navbar">
+            <button className="home-btn" onClick={() => setPage("landing")}>
+              Home
             </button>
-            <h2 style={{ margin: 0 }}>📊 Campus Analytics</h2>
-            <button 
-              onClick={adminLogout}
-              style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
+            <h2>Campus analytics</h2>
+            <button className="logout-btn" onClick={adminLogout}>
               Logout
             </button>
           </div>

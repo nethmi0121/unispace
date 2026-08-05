@@ -1,13 +1,7 @@
 import React from "react";
 
-// UniSpace — landing page
-// Design note: rather than hotlinking a photo of the University of Colombo
-// (unreliable to embed, and not ours to redistribute), the backdrop is an
-// original line-art illustration evoking the colonnades, arches and clock
-// tower of UoC's colonial-era campus architecture, in a maroon-and-gold
-// heritage palette.
-
 const FONT_IMPORT_ID = "unispace-fonts";
+const STYLE_ID = "unispace-split-styles";
 
 function ensureFonts() {
   if (typeof document === "undefined") return;
@@ -20,63 +14,33 @@ function ensureFonts() {
   document.head.appendChild(link);
 }
 
-function CampusMotif({ style }) {
-  // Original line-art skyline: colonnade, central dome, clock tower.
-  // Drawn from scratch — not a reproduction of any existing photo or artwork.
-  return (
-    <svg
-      viewBox="0 0 800 260"
-      preserveAspectRatio="xMidYMax slice"
-      style={style}
-      aria-hidden="true"
-    >
-      <g fill="none" stroke="#e8c874" strokeWidth="1.5" opacity="0.5">
-        {/* ground line */}
-        <line x1="0" y1="255" x2="800" y2="255" />
-
-        {/* left colonnade */}
-        {[40, 80, 120, 160, 200].map((x) => (
-          <line key={x} x1={x} y1="150" x2={x} y2="255" />
-        ))}
-        <line x1="20" y1="150" x2="220" y2="150" />
-        <path d="M20,150 Q120,110 220,150" />
-
-        {/* right colonnade */}
-        {[600, 640, 680, 720, 760].map((x) => (
-          <line key={x} x1={x} y1="150" x2={x} y2="255" />
-        ))}
-        <line x1="580" y1="150" x2="780" y2="150" />
-        <path d="M580,150 Q680,110 780,150" />
-
-        {/* central building block */}
-        <rect x="280" y="120" width="240" height="135" />
-        <line x1="280" y1="120" x2="520" y2="120" />
-
-        {/* central arches */}
-        {[310, 360, 410, 460].map((x) => (
-          <path key={x} d={`M${x},255 L${x},190 Q${x + 15},170 ${x + 30},190 L${x + 30},255`} />
-        ))}
-
-        {/* dome */}
-        <circle cx="400" cy="95" r="34" />
-        <line x1="366" y1="95" x2="434" y2="95" />
-        <line x1="400" y1="61" x2="400" y2="40" />
-        <circle cx="400" cy="34" r="4" />
-
-        {/* clock tower, left of dome */}
-        <rect x="150" y="60" width="30" height="90" />
-        <circle cx="165" cy="80" r="10" />
-        <line x1="165" y1="80" x2="165" y2="74" />
-        <line x1="165" y1="80" x2="170" y2="83" />
-        <path d="M150,60 L165,42 L180,60" />
-      </g>
-    </svg>
-  );
+function ensureResponsiveStyles() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = STYLE_ID;
+  style.textContent = `
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .unispace-split { flex-direction: row; }
+    .unispace-scene-pane { width: 46%; min-height: 100vh; }
+    .unispace-form-pane { width: 54%; }
+    @media (max-width: 860px) {
+      .unispace-split { flex-direction: column; }
+      .unispace-scene-pane { width: 100%; min-height: 320px; }
+      .unispace-form-pane { width: 100%; }
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 function LandingPage({ onStudentClick, onAdminClick, onAnalyticsClick }) {
   React.useEffect(() => {
     ensureFonts();
+    ensureResponsiveStyles();
   }, []);
 
   const buttons = [
@@ -103,161 +67,198 @@ function LandingPage({ onStudentClick, onAdminClick, onAnalyticsClick }) {
     },
   ];
 
+  // Campus background photo
+  const campusPhoto =
+    "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1400&q=80";
+
   return (
     <div
+      className="unispace-split"
       style={{
-        position: "relative",
-        minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
-        background: "linear-gradient(180deg, #3a0f18 0%, #5c1b26 45%, #7a2534 100%)",
+        minHeight: "100vh",
+        width: "100vw",
+        position: "relative",
+        left: "50%",
+        transform: "translateX(-50%)",
         fontFamily: "'Work Sans', sans-serif",
-        padding: "24px",
+        margin: 0,
+        padding: 0,
       }}
     >
-      {/* faint grain / vignette for depth, no external assets */}
+      {/* Photo pane with maroon gradient overlay */}
       <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(circle at 50% 20%, rgba(255,220,150,0.10), transparent 60%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <CampusMotif
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          height: "38%",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
+        className="unispace-scene-pane"
         style={{
           position: "relative",
-          zIndex: 1,
-          background: "rgba(255, 251, 244, 0.97)",
-          padding: "48px 44px",
-          borderRadius: "18px",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-          textAlign: "center",
-          width: "100%",
-          maxWidth: "420px",
-          border: "1px solid rgba(201,162,39,0.35)",
+          overflow: "hidden",
+          backgroundImage: `
+            linear-gradient(180deg, rgba(44, 11, 20, 0.7) 0%, rgba(110, 36, 49, 0.8) 60%, rgba(58, 15, 24, 0.95) 100%),
+            url("${campusPhoto}")
+          `,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            marginBottom: "4px",
+            position: "relative",
+            zIndex: 1,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            padding: "40px",
+            boxSizing: "border-box",
           }}
         >
-          <span
+          <div
             style={{
-              width: "28px",
-              height: "1px",
-              background: "#c9a227",
-              display: "inline-block",
-            }}
-          />
-          <span
-            style={{
-              fontSize: "11px",
-              letterSpacing: "0.14em",
-              color: "#8a2b3b",
-              fontWeight: 600,
-              textTransform: "uppercase",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: "10px",
             }}
           >
-            University of Colombo
-          </span>
-          <span
-            style={{
-              width: "28px",
-              height: "1px",
-              background: "#c9a227",
-              display: "inline-block",
-            }}
-          />
-        </div>
-
-        <h1
-          style={{
-            fontFamily: "'Fraunces', serif",
-            fontWeight: 600,
-            fontSize: "32px",
-            color: "#3a0f18",
-            margin: "6px 0 6px",
-          }}
-        >
-          UniSpace
-        </h1>
-
-        <p style={{ color: "#7a6a5a", marginBottom: "30px", fontSize: "14.5px" }}>
-          Select your portal to continue
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {buttons.map((b) => (
-            <button
-              key={b.label}
-              onClick={b.onClick}
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                width: "100%",
-                padding: "14px 18px",
-                background: "#fff",
-                border: "1px solid #e8ddc8",
-                borderLeft: `4px solid ${b.accent}`,
-                borderRadius: "10px",
-                cursor: "pointer",
-                textAlign: "left",
-                transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                width: "28px",
+                height: "1px",
+                background: "#e8c874",
+                display: "inline-block",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.10)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
+            />
+            <span
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.14em",
+                color: "#f0d99a",
+                fontWeight: 600,
+                textTransform: "uppercase",
               }}
             >
-              <span style={{ fontSize: "22px", lineHeight: 1 }}>{b.icon}</span>
-              <span style={{ flex: 1 }}>
-                <span
-                  style={{
-                    display: "block",
-                    fontWeight: 600,
-                    fontSize: "15px",
-                    color: "#2b2117",
-                  }}
-                >
-                  {b.label}
-                </span>
-                <span style={{ display: "block", fontSize: "12.5px", color: "#9a8b78" }}>
-                  {b.sub}
-                </span>
-              </span>
-              <span style={{ color: "#c9a227", fontSize: "16px" }}>›</span>
-            </button>
-          ))}
+              University of Colombo
+            </span>
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontStyle: "italic",
+              fontWeight: 500,
+              fontSize: "24px",
+              color: "#fff6e6",
+              margin: "0 0 8px",
+              maxWidth: "380px",
+            }}
+          >
+            One campus, every workflow, in a single space.
+          </h2>
+          <p style={{ fontSize: "12px", color: "#d8b9a8", margin: 0 }}>
+            est. 1921 · Colombo, Sri Lanka
+          </p>
         </div>
+      </div>
 
-        <p style={{ marginTop: "28px", fontSize: "11px", color: "#b6a894" }}>
-          est. 1921 · Colombo, Sri Lanka
-        </p>
+      {/* Form pane */}
+      <div
+        className="unispace-form-pane"
+        style={{
+          background: "#fffbf4",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "380px",
+            textAlign: "center",
+          }}
+        >
+          {/* Optional university seal / logo pic */}
+          <div style={{ marginBottom: "16px" }}>
+            <img
+              src="https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=160&q=80"
+              alt="University Crest"
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "2px solid #c9a227",
+              }}
+            />
+          </div>
+
+          <h1
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontWeight: 600,
+              fontSize: "32px",
+              color: "#3a0f18",
+              margin: "0 0 6px",
+            }}
+          >
+            UniSpace
+          </h1>
+
+          <p style={{ color: "#7a6a5a", marginBottom: "30px", fontSize: "14.5px" }}>
+            Select your portal to continue
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {buttons.map((b) => (
+              <button
+                key={b.label}
+                onClick={b.onClick}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  width: "100%",
+                  padding: "14px 18px",
+                  background: "#fff",
+                  border: "1px solid #e8ddc8",
+                  borderLeft: `4px solid ${b.accent}`,
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  boxSizing: "border-box",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.10)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <span style={{ fontSize: "22px", lineHeight: 1 }}>{b.icon}</span>
+                <span style={{ flex: 1 }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontWeight: 600,
+                      fontSize: "15px",
+                      color: "#2b2117",
+                    }}
+                  >
+                    {b.label}
+                  </span>
+                  <span style={{ display: "block", fontSize: "12.5px", color: "#9a8b78" }}>
+                    {b.sub}
+                  </span>
+                </span>
+                <span style={{ color: "#c9a227", fontSize: "16px" }}>›</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
